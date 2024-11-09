@@ -1,30 +1,8 @@
-import { Router } from 'express';
-import { createTask, deleteTask, getTasks, updateTask } from '../services/task';
+import express from "express"
+import { router as taskRouter } from "./tasks"
+import { router as userRouter } from "./users"
 
-export const mainRouter = Router();
+export const router = express.Router()
 
-mainRouter.post('/task', async (req, res) => {
-    const result = await createTask({ 
-        title: req.body.title,
-    })
-    if (!result) return res.status(500).json({ error: 'Ocorreu um erro ao criar a tarefa!' });
-    res.status(201).json({ result });
-})
-
-mainRouter.get('/tasks', async (req, res) => {
-    const result = await getTasks()
-    if (!result) return res.status(500).json({ error: 'Ocorreu um erro ao buscar as tarefas!' });
-    res.status(201).json({ result });
-})
-
-mainRouter.put('/task', async (req, res) => {
-    const result = await updateTask(req.body.id, req.body);
-    if (!result) return res.status(500).json({ error: 'Ocorreu um erro ao atualizar a tarefa!' });
-    res.status(201).json({ result });
-})
-
-mainRouter.delete('/task', async (req, res) => {
-    const result = await deleteTask(req.body.id);
-    if (!result) return res.status(500).json({ error: 'Ocorreu um erro ao excluir a tarefa!' });
-    res.status(201).json({ result });
-})
+router.use("/tasks", taskRouter)
+router.use("/users", userRouter)
