@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../libs/prisma";
+import jwt from "jsonwebtoken";
 
 export const getUsers = async () => {
     try {
@@ -44,4 +45,38 @@ export const deleteUser = async (userId: number) => {
     } catch (err) {
         return false
     }
+}
+
+export const createJwtToken = (userId: number) => {
+
+    const payload = { id: userId, }
+    
+    return jwt.sign(
+        payload, 
+        process.env.JWT_SECRET as string, 
+        { expiresIn: '365 days' }
+    )
+
+}
+
+export const getUserById = async (userId: string) => {
+
+    const user = await prisma.user.findUnique({
+        where: { id: parseInt(userId) }
+    })
+
+    if (user) return user;
+    return null;
+
+}
+
+export const getUserByEmailAndPassword = async (email: string, password: string) => {
+
+    const user = await prisma.user.findFirst({
+        where: { email, password }
+    })
+
+    if (user) return user;
+    return null;
+
 }

@@ -1,7 +1,10 @@
 import { Router } from 'express';
 import { createTask, deleteTask, getTasks, updateTask } from '../services/task';
+import { auth } from '../middlewares/auth';
 
 export const router = Router();
+
+router.use(auth.jwt)
 
 router.post('/', async (req, res) => {
     const result = await createTask({ 

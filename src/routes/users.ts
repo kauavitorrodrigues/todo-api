@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { createUser, deleteUser, getUsers, updateUser } from '../services/user';
+import { auth } from '../middlewares/auth';
 
 export const router = Router();
 
@@ -25,17 +26,20 @@ router.post('/', async (req, res) => {
 
 })
 
-router.post('/login', async (req, res) => {
-    res.json({ message: 'Login efetuado com sucesso' });
-})
+router.post('/login', auth.local, async (req, res) => {
+    res.json({
+        user: req.user, 
+        auth: req.authInfo
+    })
+});
 
-router.get('/', async (req, res) => {
+router.get('/', auth.jwt, async (req, res) => {
     const result = await getUsers()
     if (!result) return res.status(500).json({ error: 'Erro ao buscar os usuários' });
     res.status(201).json({ result });
 })
 
-router.put('/', async (req, res) => {
+router.put('/', auth.jwt, async (req, res) => {
     const result = await updateUser(
         req.body.id,
         {   
@@ -48,7 +52,7 @@ router.put('/', async (req, res) => {
     res.status(201).json({ result });
 })
 
-router.delete('/', async (req, res) => {
+router.delete('/', auth.jwt, async (req, res) => {
     const result = await deleteUser(req.body.id);
     if (!result) return res.status(500).json({ error: 'Erro ao excluir o usuário' });
     res.status(201).json({ result });
